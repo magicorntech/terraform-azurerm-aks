@@ -4,6 +4,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   location                            = var.rg_location
   dns_prefix_private_cluster          = "${var.tenant}-${var.name}-aks-${var.instance_name}-${var.environment}-dns"
   kubernetes_version                  = var.aks_version
+  sku_tier                            = var.sku_tier
   http_application_routing_enabled    = false
   role_based_access_control_enabled   = true
   private_cluster_public_fqdn_enabled = false

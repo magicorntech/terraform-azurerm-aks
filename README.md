@@ -5,7 +5,7 @@ Magicorn made Terraform Module for Azure Provider
 ```
 module "aks" {
   source           = "magicorntech/aks/azurerm"
-  version          = "0.0.1"
+  version          = "0.0.2"
   tenant           = var.tenant
   name             = var.name
   environment      = var.environment

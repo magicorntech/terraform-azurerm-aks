@@ -10,6 +10,7 @@ variable "aks_prv_dns_id" {}
 variable "pvt_subnet_ids" {}
 variable "aks_subnet_ids" {}
 variable "aks_version" {}
+variable "sku_tier" {}
 variable "service_cidrs" {}
 variable "dns_service_ip" {}
 variable "default_os_sku" {}
