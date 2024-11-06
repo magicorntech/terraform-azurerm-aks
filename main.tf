@@ -12,7 +12,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   private_dns_zone_id                 = var.aks_prv_dns_id
   image_cleaner_enabled               = false
   image_cleaner_interval_hours        = 48
-  node_os_upgrade_channel             = "NodeImage"
+  node_os_upgrade_channel             = "None"
 
   default_node_pool {
     name                        = "default"

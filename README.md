@@ -5,7 +5,7 @@ Magicorn made Terraform Module for Azure Provider
 ```
 module "aks" {
   source           = "magicorntech/aks/azurerm"
-  version          = "0.0.2"
+  version          = "0.0.3"
   tenant           = var.tenant
   name             = var.name
   environment      = var.environment
@@ -19,7 +19,8 @@ module "aks" {
 
   # AKS Configuration
   instance_name          = "cluster"
-  aks_version            = "1.28.9"
+  aks_version            = "1.29.7"
+  sku_tier               = "Free"
   service_cidrs          = "10.33.0.0/16"
   dns_service_ip         = "10.33.0.10"
   default_os_sku         = "Ubuntu"
