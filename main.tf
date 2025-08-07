@@ -13,6 +13,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   image_cleaner_enabled               = false
   image_cleaner_interval_hours        = 48
   node_os_upgrade_channel             = "None"
+  cost_analysis_enabled               = var.cost_analysis_enabled
 
   default_node_pool {
     name                        = "default"
@@ -98,11 +99,16 @@ resource "azurerm_kubernetes_cluster" "main" {
   #   log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
   # }
 
+  upgrade_override {
+    force_upgrade_enabled = false
+  }
+
   lifecycle {
     ignore_changes = [
       network_profile[0].load_balancer_profile,
       network_profile[0].nat_gateway_profile,
-      default_node_pool[0].node_count
+      default_node_pool[0].node_count,
+      upgrade_override[0].force_upgrade_enabled
     ]
   }
 
