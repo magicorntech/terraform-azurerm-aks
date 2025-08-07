@@ -99,16 +99,12 @@ resource "azurerm_kubernetes_cluster" "main" {
   #   log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
   # }
 
-  upgrade_override {
-    force_upgrade_enabled = false
-  }
-
   lifecycle {
     ignore_changes = [
       network_profile[0].load_balancer_profile,
       network_profile[0].nat_gateway_profile,
       default_node_pool[0].node_count,
-      upgrade_override[0].force_upgrade_enabled
+      upgrade_override
     ]
   }
 
