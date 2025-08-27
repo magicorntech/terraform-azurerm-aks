@@ -34,7 +34,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     workload_runtime            = "OCIContainer"
     auto_scaling_enabled        = lookup(var.default_scaling_config, "auto")
     node_public_ip_enabled      = false
-    zones                       = [1]
+    zones                       = [var.zones]
 
     upgrade_settings {
       max_surge = "20%"
