@@ -24,7 +24,8 @@ module "aks" {
   service_cidrs          = "10.33.0.0/16"
   dns_service_ip         = "10.33.0.10"
   cost_analysis_enabled = true
-
+  zones = ["2"]
+  
   # Auto Scaler Configuration
   auto_scaler_profile = {
     balance_similar_node_groups      = true
