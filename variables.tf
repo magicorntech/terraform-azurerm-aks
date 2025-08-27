@@ -32,3 +32,4 @@ variable "gpu_disk_size" {}
 variable "gpu_max_pods" {}
 variable "gpu_vm_size" {}
 variable "gpu_scaling_config" {}
+variable "zones" {}
