@@ -5,7 +5,7 @@ Magicorn made Terraform Module for Azure Provider
 ```
 module "aks" {
   source           = "magicorntech/aks/azurerm"
-  version          = "0.1.1"
+  version          = "0.1.2"
   tenant           = var.tenant
   name             = var.name
   environment      = var.environment
@@ -23,8 +23,8 @@ module "aks" {
   sku_tier               = "Free"
   service_cidrs          = "10.33.0.0/16"
   dns_service_ip         = "10.33.0.10"
-  cost_analysis_enabled = true
-  zones = ["2"]
+  cost_analysis_enabled  = true
+  zones                  = ["2"]
   
   # Auto Scaler Configuration
   auto_scaler_profile = {
