@@ -33,3 +33,20 @@ variable "gpu_max_pods" {}
 variable "gpu_vm_size" {}
 variable "gpu_scaling_config" {}
 variable "zones" {}
+
+# Optional: Application Gateway for Containers (AGC) ALB Controller
+# prerequisites — identity/RBAC/OIDC only. Default false/null so every
+# existing consumer of this module is completely unaffected; the only two
+# variables in this file with a default, deliberately, so adding them can
+# never be a breaking change. See alb.tf and generator.tf.
+variable "alb_controller_enabled" {
+  default = false
+}
+
+# Resource ID of a subnet delegated to Microsoft.ServiceNetworking/
+# trafficControllers (min /24, not the AKS node/pod subnet) — required only
+# when alb_controller_enabled is true. Subnet creation itself is out of
+# scope for this module (subnets live in azurerm-network).
+variable "alb_subnet_id" {
+  default = null
+}

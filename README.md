@@ -5,7 +5,7 @@ Magicorn made Terraform Module for Azure Provider
 ```
 module "aks" {
   source           = "magicorntech/aks/azurerm"
-  version          = "0.1.2"
+  version          = "0.2.0"
   tenant           = var.tenant
   name             = var.name
   environment      = var.environment
@@ -55,6 +55,40 @@ module "aks" {
   gpu_max_pods       = 90
   gpu_vm_size        = "Standard_NC4as_T4_v3"
   gpu_scaling_config = { desired = 1, min = 1, max = 1, auto = true, spot = false }
+
+  # Optional: Application Gateway for Containers (ALB Controller) prerequisites.
+  # Both default off/null -- omit entirely if you don't need AGC ingress.
+  alb_controller_enabled = true
+  alb_subnet_id           = azurerm_subnet.alb.id # delegated to Microsoft.ServiceNetworking/trafficControllers, /24 or larger, NOT the AKS node/pod subnet
 }
 
 ```
+
+### Application Gateway for Containers (AGC) ALB Controller
+
+Setting `alb_controller_enabled = true` (+ `alb_subnet_id`) provisions only
+the **Azure-side** prerequisites for the ALB Controller's managed deployment
+mode: enables OIDC issuer + Workload Identity on the cluster, a user-assigned
+managed identity federated to the ALB Controller's own fixed ServiceAccount
+(`system:serviceaccount:azure-alb-system:alb-controller-sa`), and the three
+Azure RBAC roles it needs (Reader + "AppGw for Containers Configuration
+Manager" on the AKS node resource group, Network Contributor scoped to just
+`alb_subnet_id`).
+
+It does **not** install the ALB Controller Helm chart or create the
+`ApplicationLoadBalancer` custom resource — same split this module already
+uses for cluster-autoscaler/aws-load-balancer-controller on the AWS side
+(see `aws-eks`'s own `generator.tf`): nothing in this module talks to the
+Kubernetes API. After `terraform apply`, run `terraform output` to find
+`_deployables/1_alb_controller.txt` (or look in your root module's
+`_deployables/` directory) for the ready-to-run `helm install` +
+`kubectl apply` commands, with the managed identity's client ID and your
+subnet already filled in.
+
+The delegated `alb_subnet_id` subnet itself is **not** created by this
+module (subnets live in `azurerm-network`) — provision one there or
+manually before setting `alb_controller_enabled`.
+
+See magicorntech/charts' README ("Azure (AKS)" section) for the matching
+`global.ingress[].albName`/`albNamespace` chart values once the
+`ApplicationLoadBalancer` is `Programmed`.

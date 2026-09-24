@@ -14,6 +14,11 @@ resource "azurerm_kubernetes_cluster" "main" {
   image_cleaner_interval_hours        = 48
   node_os_upgrade_channel             = "None"
   cost_analysis_enabled               = var.cost_analysis_enabled
+  # Required for the AGC ALB Controller's workload identity (alb.tf) — off
+  # (both provider-defaulted to false) unless alb_controller_enabled is set,
+  # so this is a no-op for every existing consumer of this module.
+  oidc_issuer_enabled       = var.alb_controller_enabled
+  workload_identity_enabled = var.alb_controller_enabled
 
   default_node_pool {
     name                        = "default"
