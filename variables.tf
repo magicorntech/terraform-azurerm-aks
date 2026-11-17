@@ -15,23 +15,71 @@ variable "service_cidrs" {}
 variable "dns_service_ip" {}
 variable "cost_analysis_enabled" {}
 variable "auto_scaler_profile" {}
-variable "default_os_sku" {}
-variable "default_disk_size" {}
-variable "default_max_pods" {}
-variable "default_vm_size" {}
-variable "default_scaling_config" {}
-variable "extra_nodes_deploy" {}
-variable "extra_os_sku" {}
-variable "extra_disk_size" {}
-variable "extra_max_pods" {}
-variable "extra_vm_size" {}
-variable "extra_scaling_config" {}
-variable "gpu_nodes_deploy" {}
-variable "gpu_os_sku" {}
-variable "gpu_disk_size" {}
-variable "gpu_max_pods" {}
-variable "gpu_vm_size" {}
-variable "gpu_scaling_config" {}
+variable "node_pools" {
+  description = "AKS node pools keyed by pool name. Include a default entry; other entries create user node pools."
+  default     = {}
+
+  validation {
+    condition = length(var.node_pools) == 0 || (
+      contains(keys(var.node_pools), "default") &&
+      try(length(var.node_pools["default"].taints), 0) == 0
+    )
+    error_message = "node_pools must include a \"default\" pool; taints are only supported on user pools."
+  }
+}
+
+# Deprecated compatibility inputs. Used only when node_pools is empty.
+variable "default_os_sku" {
+  default = null
+}
+variable "default_disk_size" {
+  default = null
+}
+variable "default_max_pods" {
+  default = null
+}
+variable "default_vm_size" {
+  default = null
+}
+variable "default_scaling_config" {
+  default = null
+}
+variable "extra_nodes_deploy" {
+  default = false
+}
+variable "extra_os_sku" {
+  default = null
+}
+variable "extra_disk_size" {
+  default = null
+}
+variable "extra_max_pods" {
+  default = null
+}
+variable "extra_vm_size" {
+  default = null
+}
+variable "extra_scaling_config" {
+  default = null
+}
+variable "gpu_nodes_deploy" {
+  default = false
+}
+variable "gpu_os_sku" {
+  default = null
+}
+variable "gpu_disk_size" {
+  default = null
+}
+variable "gpu_max_pods" {
+  default = null
+}
+variable "gpu_vm_size" {
+  default = null
+}
+variable "gpu_scaling_config" {
+  default = null
+}
 variable "zones" {}
 
 # Optional: Application Gateway for Containers (AGC) ALB Controller

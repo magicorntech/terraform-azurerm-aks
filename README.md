@@ -5,7 +5,7 @@ Magicorn made Terraform Module for Azure Provider
 ```
 module "aks" {
   source           = "magicorntech/aks/azurerm"
-  version          = "0.2.0"
+  version          = "0.3.0"
   tenant           = var.tenant
   name             = var.name
   environment      = var.environment
@@ -35,26 +35,36 @@ module "aks" {
     scale_down_utilization_threshold = 0.65
   }
 
-  # Node Configuration
-  default_os_sku         = "Ubuntu"
-  default_disk_size      = 128
-  default_max_pods       = 90
-  default_vm_size        = "Standard_F8s_v2"
-  default_scaling_config = { desired = 2, min = 3, max = 10, auto = true }
-
-  extra_nodes_deploy   = true
-  extra_os_sku         = "Ubuntu"
-  extra_disk_size      = 128
-  extra_max_pods       = 90
-  extra_vm_size        = "Standard_F8s_v2"
-  extra_scaling_config = { desired = 2, min = 3, max = 10, auto = true, spot = false }
-
-  gpu_nodes_deploy   = false
-  gpu_os_sku         = "Ubuntu"
-  gpu_disk_size      = 128
-  gpu_max_pods       = 90
-  gpu_vm_size        = "Standard_NC4as_T4_v3"
-  gpu_scaling_config = { desired = 1, min = 1, max = 1, auto = true, spot = false }
+  # Node Configuration (default is required; set node_pools = {} to use legacy inputs)
+  node_pools = {
+    default = {
+      os_sku         = "Ubuntu"
+      disk_size      = 128
+      max_pods       = 90
+      vm_size        = "Standard_F8s_v2"
+      scaling_config = { desired = 2, min = 3, max = 10, auto = true }
+    }
+    extra = {
+      os_sku         = "Ubuntu"
+      disk_size      = 128
+      max_pods       = 90
+      vm_size        = "Standard_F8s_v2"
+      scaling_config = { desired = 2, min = 3, max = 10, auto = true }
+      priority       = "Regular"
+    }
+    gpu = {
+      os_sku         = "Ubuntu"
+      disk_size      = 128
+      max_pods       = 90
+      vm_size        = "Standard_NC4as_T4_v3"
+      scaling_config = { desired = 1, min = 1, max = 1, auto = true }
+      taints = [{
+        key    = "nvidia.com/gpu"
+        value  = "true"
+        effect = "NO_SCHEDULE"
+      }]
+    }
+  }
 
   # Optional: Application Gateway for Containers (ALB Controller) prerequisites.
   # Both default off/null -- omit entirely if you don't need AGC ingress.
@@ -63,6 +73,18 @@ module "aks" {
 }
 
 ```
+
+### Node pools
+
+Each `node_pools` map key becomes the AKS node pool name. The required
+`default` entry configures AKS' built-in system pool; all other entries
+create user node pools. Optional `taints` on user pools uses the same
+`[{ key, value, effect }]` shape as EKS. AWS effect names
+(`NO_SCHEDULE`, `NO_EXECUTE`, `PREFER_NO_SCHEDULE`) are converted to AKS
+taint effects. The AzureRM provider does not expose taints on the built-in
+system pool, so `default.taints` is rejected. Optional `priority` is
+`"Regular"` by default or `"Spot"`.
+Existing scalar node-pool inputs remain supported when `node_pools` is empty.
 
 ### Application Gateway for Containers (AGC) ALB Controller
 

@@ -24,20 +24,20 @@ resource "azurerm_kubernetes_cluster" "main" {
     name                        = "default"
     temporary_name_for_rotation = "defaulttemp"
     type                        = "VirtualMachineScaleSets"
-    vm_size                     = var.default_vm_size
-    max_pods                    = var.default_max_pods
-    min_count                   = lookup(var.default_scaling_config, "auto") == false ? null : lookup(var.default_scaling_config, "min")
-    max_count                   = lookup(var.default_scaling_config, "auto") == false ? null : lookup(var.default_scaling_config, "max")
-    node_count                  = lookup(var.default_scaling_config, "desired")
+    vm_size                     = local.default_node_pool.vm_size
+    max_pods                    = local.default_node_pool.max_pods
+    min_count                   = lookup(local.default_node_pool.scaling_config, "auto", true) == false ? null : lookup(local.default_node_pool.scaling_config, "min", lookup(local.default_node_pool.scaling_config, "desired", 1))
+    max_count                   = lookup(local.default_node_pool.scaling_config, "auto", true) == false ? null : lookup(local.default_node_pool.scaling_config, "max", lookup(local.default_node_pool.scaling_config, "desired", 1))
+    node_count                  = lookup(local.default_node_pool.scaling_config, "desired", 1)
     vnet_subnet_id              = var.pvt_subnet_ids[0]
     pod_subnet_id               = var.aks_subnet_ids[0]
-    os_disk_size_gb             = var.default_disk_size
+    os_disk_size_gb             = local.default_node_pool.disk_size
     os_disk_type                = "Managed"
-    os_sku                      = var.default_os_sku
+    os_sku                      = local.default_node_pool.os_sku
     kubelet_disk_type           = "OS"
     scale_down_mode             = "Delete"
     workload_runtime            = "OCIContainer"
-    auto_scaling_enabled        = lookup(var.default_scaling_config, "auto")
+    auto_scaling_enabled        = lookup(local.default_node_pool.scaling_config, "auto", true)
     node_public_ip_enabled      = false
     zones                       = var.zones
 
